@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WizardService {
+  private activeStepIndex = new BehaviorSubject<number>(0);
+  public readonly activeStepIndex$ = this.activeStepIndex.asObservable();
+
   public wizardForm: FormGroup;
-  public currentStepIndex: number = 0;
 
   constructor(private fb: FormBuilder) {
     this.wizardForm = this.fb.group({
@@ -24,27 +27,32 @@ export class WizardService {
     });
   }
 
+  public getCurrentStepIndex(): number {
+    return this.activeStepIndex.getValue();
+  }
+
   isCurrentStepValid(): boolean {
-    const stepKeys = Object.keys(this.wizardForm.controls);
-    const currentStepKey = stepKeys[this.currentStepIndex];
+    const currentStepKey = Object.keys(this.wizardForm.controls)[this.activeStepIndex.getValue()];
     return this.wizardForm.get(currentStepKey)?.valid ?? false;
   }
 
   goToNextStep(): void {
-    if (this.isCurrentStepValid() && this.currentStepIndex < this.getStepCount() - 1) {
-      this.currentStepIndex++;
+    if (this.isCurrentStepValid()) {
+      const nextIndex = this.activeStepIndex.getValue() + 1;
+      this.activeStepIndex.next(nextIndex);
     }
   }
 
   goToPreviousStep(): void {
-    if (this.currentStepIndex > 0) {
-      this.currentStepIndex--;
+    const previousIndex = this.activeStepIndex.getValue() - 1;
+    if (previousIndex >= 0) {
+      this.activeStepIndex.next(previousIndex);
     }
   }
 
   goToStep(index: number): void {
     if (index >= 0 && index < this.getStepCount()) {
-      this.currentStepIndex = index;
+      this.activeStepIndex.next(index);
     }
   }
 

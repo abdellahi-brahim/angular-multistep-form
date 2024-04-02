@@ -1,0 +1,7 @@
+<ul class="nav nav-pills mb-3">
+  <li class="nav-item" *ngFor="let step of steps; let i = index">
+    <a class="nav-link" [class.active]="i === currentStep" (click)="changeStep(i)">
+      {{ step.label }}
+    </a>
+  </li>
+</ul>

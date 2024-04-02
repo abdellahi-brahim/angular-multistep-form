@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { WizardService } from '../../wizard.service';
+import { WizardService } from '../../../services/wizard.service';
 
 @Component({
   selector: 'app-address',

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { WizardService } from './wizard.service';
+import { WizardService } from '../../services/wizard.service';
 
 @Component({
   selector: 'app-wizard',
-  templateUrl: './wizard.component.html',
+  templateUrl: './wizard.component.html'
 })
 export class WizardComponent {
   steps = [
@@ -26,25 +26,31 @@ export class WizardComponent {
     this.wizardService.goToStep(index);
   }
 
-  isCurrentStepValid(): boolean {
-    return this.wizardService.isCurrentStepValid();
+  get currentStepIndex(): number {
+    return this.wizardService.getCurrentStepIndex();
+  }
+
+  isStepActive(index: number): boolean {
+    return index === this.currentStepIndex;
   }
 
   showNextButton(): boolean {
-    return this.wizardService.currentStepIndex < this.steps.length - 1;
+    return this.currentStepIndex < this.steps.length - 1;
   }
 
   showPreviousButton(): boolean {
-    return this.wizardService.currentStepIndex > 0;
+    return this.currentStepIndex > 0;
   }
 
   showSubmitButton(): boolean {
-    return this.wizardService.currentStepIndex === this.steps.length - 1;
+    return this.currentStepIndex === this.steps.length - 1;
   }
 
   submitForm(): void {
-    if (this.isCurrentStepValid()) {
-      console.log('Form submission', this.wizardService.wizardForm.value);
+    if (this.wizardService.isCurrentStepValid()) {
+      console.log('Form data to submit:', this.wizardService.wizardForm.value);
+    } else {
+      console.error('Current step is not valid.');
     }
   }
 }
