@@ -1,0 +1,17 @@
+<div [formGroup]="form">
+  <div class="form-group">
+    <label for="street">Street</label>
+    <input type="text" formControlName="street" class="form-control" id="street" placeholder="Enter street">
+      <div *ngIf="street?.touched && street?.invalid" class="text-danger">
+        <div *ngIf="street?.errors?.['required']">Street is required.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="city">City</label>
+      <input type="text" formControlName="city" class="form-control" id="city" placeholder="Enter city">
+      <div *ngIf="city?.touched && city?.invalid" class="text-danger">
+        <div *ngIf="city?.errors?.['required']">City is required.</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<div [formGroup]="form">
+  <div class="form-group">
+    <label for="language">Preferred Language</label>
+    <select formControlName="language" class="form-control" id="language">
+      <option value="">Select Language</option>
+      <option value="English">English</option>
+      <option value="Spanish">Spanish</option>
+      <option value="French">French</option>
+      <option value="German">German</option>
+      <!-- Add other languages as necessary -->
+    </select>
+    <div *ngIf="language?.touched && language?.invalid" class="text-danger">
+      <div *ngIf="language?.errors?.['required']">Language is required.</div>
+    </div>
+  </div>
+</div>
