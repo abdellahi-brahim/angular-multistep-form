@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WizardService {
   private activeStepIndex = new BehaviorSubject<number>(0);
-  public readonly activeStepIndex$ = this.activeStepIndex.asObservable();
-
+  private maxStepReached = new BehaviorSubject<number>(0);
   public wizardForm: FormGroup;
 
   constructor(private fb: FormBuilder) {
@@ -27,19 +26,44 @@ export class WizardService {
     });
   }
 
-  public getCurrentStepIndex(): number {
-    return this.activeStepIndex.getValue();
+  public get activeStepIndex$(): Observable<number> {
+    return this.activeStepIndex.asObservable();
   }
 
-  isCurrentStepValid(): boolean {
-    const currentStepKey = Object.keys(this.wizardForm.controls)[this.activeStepIndex.getValue()];
-    return this.wizardForm.get(currentStepKey)?.valid ?? false;
+  public get maxStepReached$(): Observable<number> {
+    return this.maxStepReached.asObservable();
+  }
+
+  goToStep(index: number): void {
+    if (index < this.activeStepIndex.getValue() || this.isCurrentStepValid()) {
+      this.activeStepIndex.next(index);
+    }
+  }
+
+  nextStep(): void {
+    if (this.isCurrentStepValid()) {
+      const nextIndex = this.activeStepIndex.getValue() + 1;
+      this.activeStepIndex.next(nextIndex);
+      if (nextIndex > this.maxStepReached.getValue()) {
+        this.maxStepReached.next(nextIndex);
+      }
+    }
+  }
+
+  previousStep(): void {
+    const previousIndex = this.activeStepIndex.getValue() - 1;
+    if (previousIndex >= 0) {
+      this.activeStepIndex.next(previousIndex);
+    }
   }
 
   goToNextStep(): void {
     if (this.isCurrentStepValid()) {
       const nextIndex = this.activeStepIndex.getValue() + 1;
       this.activeStepIndex.next(nextIndex);
+      if (nextIndex > this.maxStepReached.getValue()) {
+        this.maxStepReached.next(nextIndex);
+      }
     }
   }
 
@@ -50,10 +74,14 @@ export class WizardService {
     }
   }
 
-  goToStep(index: number): void {
-    if (index >= 0 && index < this.getStepCount()) {
-      this.activeStepIndex.next(index);
-    }
+  isCurrentStepValid(): boolean {
+    const currentStepKey = Object.keys(this.wizardForm.controls)[this.activeStepIndex.getValue()];
+    const currentFormGroup = this.wizardForm.get(currentStepKey) as FormGroup;
+    return currentFormGroup?.valid ?? false;
+  }
+
+  getCurrentStepIndex(): number {
+    return this.activeStepIndex.getValue();
   }
 
   getStepCount(): number {

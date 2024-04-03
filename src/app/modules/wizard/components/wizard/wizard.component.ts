@@ -7,12 +7,20 @@ import { WizardService } from '../../services/wizard.service';
 })
 export class WizardComponent {
   steps = [
-    { label: 'Personal Info', key: 'personalInfo' },
-    { label: 'Language', key: 'language' },
-    { label: 'Address', key: 'address' }
+    { label: 'Personal Info', id: 'personalInfo' },
+    { label: 'Language', id: 'language' },
+    { label: 'Address', id: 'address' }
   ];
 
   constructor(public wizardService: WizardService) {}
+
+  get currentStepIndex(): number {
+    return this.wizardService.getCurrentStepIndex();
+  }
+
+  goToStep(index: number): void {
+    this.wizardService.goToStep(index);
+  }
 
   nextStep(): void {
     this.wizardService.goToNextStep();
@@ -22,24 +30,12 @@ export class WizardComponent {
     this.wizardService.goToPreviousStep();
   }
 
-  goToStep(index: number): void {
-    this.wizardService.goToStep(index);
-  }
-
-  get currentStepIndex(): number {
-    return this.wizardService.getCurrentStepIndex();
-  }
-
-  isStepActive(index: number): boolean {
-    return index === this.currentStepIndex;
+  showPreviousButton(): boolean {
+    return this.currentStepIndex > 0;
   }
 
   showNextButton(): boolean {
     return this.currentStepIndex < this.steps.length - 1;
-  }
-
-  showPreviousButton(): boolean {
-    return this.currentStepIndex > 0;
   }
 
   showSubmitButton(): boolean {
@@ -50,7 +46,7 @@ export class WizardComponent {
     if (this.wizardService.isCurrentStepValid()) {
       console.log('Form data to submit:', this.wizardService.wizardForm.value);
     } else {
-      console.error('Current step is not valid.');
+      console.error('Form is not valid and cannot be submitted.');
     }
   }
 }

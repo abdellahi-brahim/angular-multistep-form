@@ -1,16 +1,22 @@
 <div class="container">
-  <!-- Stepper Navigation -->
-  <app-stepper [steps]="steps" [currentStep]="currentStepIndex" (stepChanged)="goToStep($event)"></app-stepper>
+  <!-- Stepper Component -->
+  <app-stepper
+    [steps]="steps"
+    [currentStep]="currentStepIndex"
+    (stepChanged)="goToStep($event)">
+  </app-stepper>
 
-  <!-- Step Content -->
-  <div *ngIf="isStepActive(0)">
-    <app-personal-info></app-personal-info>
-  </div>
-  <div *ngIf="isStepActive(1)">
-    <app-language></app-language>
-  </div>
-  <div *ngIf="isStepActive(2)">
-    <app-address></app-address>
+  <!-- Dynamic Step Content -->
+  <div>
+    <ng-container *ngIf="currentStepIndex === 0">
+      <app-personal-info></app-personal-info>
+    </ng-container>
+    <ng-container *ngIf="currentStepIndex === 1">
+      <app-language></app-language>
+    </ng-container>
+    <ng-container *ngIf="currentStepIndex === 2">
+      <app-address></app-address>
+    </ng-container>
   </div>
 
   <!-- Navigation Buttons -->
